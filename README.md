@@ -521,9 +521,8 @@ set_target_properties(ex4prog
   )
 ```
 
-Ova je  `CMakeLists.txt` datoteka izuzetno jednostavna jer ne postavljamo nikakva svojstva cilja.
-To je posljedica načina na koji je konstruiran modul `FindBoost.cmake` čiju dokumentaciju možete vidjeti
-s naredbom
+Ova je  `CMakeLists.txt` datoteka izuzetno jednostavna što je posljedica načina na koji je konstruiran modul
+`FindBoost.cmake` čiju dokumentaciju možete vidjeti naredbom
 
 ```
 cmake --help-module FindBoost
@@ -546,7 +545,8 @@ Kompilacijska linija (na Linux sustavu) izgleda ovako (staza do izvornog koda je
 Poziv linkera izgleda ovako:
 
 ```
-/usr/bin/c++      CMakeFiles/path-info.dir/main.cpp.o  -o path-info /usr/lib/x86_64-linux-gnu/libboost_filesystem.so /usr/lib/x86_64-linux-gnu/libboost_system.so
+/usr/bin/c++      CMakeFiles/path-info.dir/main.cpp.o  -o path-info /usr/lib/x86_64-linux-gnu/libboost_filesystem.so
+/usr/lib/x86_64-linux-gnu/libboost_system.so
 ```
 Ovdje vidimo da biblioteka `libboost_filesystem` ovisi o biblioteci `libboost_system` te da je ta zavisnost
 dodana automatski bez naše intervencije.
@@ -557,108 +557,93 @@ slijede praktički svi moduli koji eksportiraju ciljeve.
 
 ## Testovi
 
+Za testiranje koristimo `googletest` kao submodul u našem Git repozitoriju (vidjeti https://github.com/PMF-MO-OPCPP/Git).
+U svim našim primjerima koji koriste `googletest` biblioteka će se nalaziti  u direktoriju 'external/googletest'.
+Sami testovi će se nalaziti u direktoriju 'test'.
+Naša `CMakeLists.txt` datoteka u korijenskom direktoriju će omogućiti tetstiranje (`enable_testing()` naredba) i
+uključiti `googletest` biblioteku:
 
-Ovdje pokazujemo kako uključiti testove u sustav izgradnje.
-
-=== Pojedinačno testiranje
-
-Pretpostavimo da imamo funkciju koju želimo testirati. Radi jednostavnosti uzet ćemo da
-funkcija vektor integera i vraća njihovu sumu.
-
-.sum_ints.cpp
-[source, C++]
 ```
-include::Code/test-1/sum_ints.cpp[]
-```
+cmake_minimum_required(VERSION 3.1)
 
-Potrebna nam je i datoteka zaglavlja,
+project(ex5_project CXX)
+enable_testing()
 
-.sum_ints.hpp
-[source, C++]
-```
-include::Code/test-1/sum_ints.hpp[]
-```
-i glavni program,
+# Compilation of googletest library #####
+set(GOOGLETEST_ROOT external/googletest/googletest CACHE STRING "Google Test source root")
 
-.main.cpp
-[source, C++]
-```
-include::Code/test-1/main.cpp[]
-```
+include_directories(
+    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}
+    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/include
+    )
 
-Želmo testirati funkciju `sum_integers()` i pri tome ćemo pokazati da testove možemo pisati u
-različitim jezicima, C++, bash, python i slično, i uključiti ih u sustav izgradnje. Ono što je bitno
-za CMake, odnosno njegov dio CTest koji je posvećen testovima, jest samo konvencija da testirajući
-program mora vratiti nulu ako je test uspio i bilo koji broj različit od nule ako nije.
+set(GOOGLETEST_SOURCES
+    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest-all.cc
+    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest_main.cc
+    )
 
-Napišimo sada nekoliko testova.
+foreach(_source ${GOOGLETEST_SOURCES})
+    set_source_files_properties(${_source} PROPERTIES GENERATED 1)
+endforeach()
 
-.test.sh
-[source, bash]
-```
-include::Code/test-1/test.sh[]
-```
+add_library(googletest ${GOOGLETEST_SOURCES})
 
-.test.cpp
-[source, C++]
+add_subdirectory("src")
+add_subdirectory("test")
 ```
-include::Code/test-1/test.cpp[]
-```
+Uočimo da ne uključujemo direktorij `external` u kojem je  `googletest` jer sam  `googletest` nije
+dio našeg projekta -- on je submodul (vidi https://github.com/PMF-MO-OPCPP/Git).
 
-.test.py
-[source, python]
-```
-include::Code/test-1/test.py[]
-```
 
-Pogledajmo kako ćemo ova tri test ugraditi u sustav izgradnje. Da bi se testovi mogli automatski ivršavati
-moramo u `CMakeLists.txt` uključiti naredbu `enable_testing()`.  Testovi se zatim dodaju pomoću
-`add_test()` naredbe čije ne jajjednostavnija forma sljedeća:
+Program se nalazi u direktoriju `src` i sastoji se od datoteka `data.h`, `data.cpp` i `main.cpp`.
+Testovi se nalaze u direktoriju `test` u datoteci `test.cpp`.
 
-[source, cmake]
+Datoteka `CMakeLists.txt` u `test` direktoriju ima sljedeći sadržaj:
+
+```
+add_executable("testData" test.cpp ../src/data.cpp)
+target_link_libraries("testData"  googletest pthread)
+
+add_test(NAME testData COMMAND testData)
+```
+Prve dvije naredbe kompiliraju test program i povezuju ga sa `googletest` bibliotekom (i `pthread`  bibliotekom).
+Zadnja naredba ima oblik
+
+
 ```
 add_test(NAME testName COMMAND command [arg...])
 ```
+i ona dodaje test. Sve tako definirane testove izvršavamo tako što i izvršnom poddirektoriju
+otipkamo
 
-Tom naredbom dodajemo test imena `testName` koji se dobiva izvršavanjem naredbe `command` sa ili bez
-argumenata. Naredba `command` mora biti izvršni program koji vraća nulu u slučaju da je test prošao
-ili broj različit od nule ako nije.
-
-U `add_test()` naredbi moramo znati punu stazu do testirajućeg programa. To je problem jer ime samog
-programa (njegova ekstenzija) i staza ovise o sustavu na kojem se testovi izgrađuju. Da bi se izbjegla
-ta zavisnost CMake nam nudi generatorski izraz:
-[source, cmake]
 ```
-$<TARGET_FILE:target>
+ctest -V
 ```
-Izraz tog tipa se naziva *generatorski izraz* (eng. _generator expression_) i on nudi informaciju o
-cilju `target`. U ovom konkretnom slučaju ovaj izraz daje punu stazu cilja  `target`.
+Izlaz može biti sljedeći:
 
-Sada možemo pogledati odgovarajuću `CMakeLists.txt` datoteku:
-
-.CMakeLists.txt
-[source, cmake]
 ```
-include::Code/test-1/CMakeLists.txt[]
+   Start 1: testData
+
+1: Test command: /home/jurak/mytext/Teaching/C++/GitHub/CMake/ex5/build/test/testData
+1: Test timeout computed to be: 9.99988e+06
+1: [==========] Running 2 tests from 1 test suite.
+1: [----------] Global test environment set-up.
+1: [----------] 2 tests from Data
+1: [ RUN      ] Data.size
+1: [       OK ] Data.size (0 ms)
+1: [ RUN      ] Data.sort
+1: [       OK ] Data.sort (0 ms)
+1: [----------] 2 tests from Data (0 ms total)
+1:
+1: [----------] Global test environment tear-down
+1: [==========] 2 tests from 1 test suite ran. (0 ms total)
+1: [  PASSED  ] 2 tests.
+1/1 Test #1: testData .........................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec
+
 ```
 
-U `CMakeLists.txt` smo prvo morali naći Pythonov interpreter i `bash` program. Staze do nih su
-vraćene kroz varijable `PYTHON_EXECUTABLE` i `BASH_EXECUTABLE`. Zatim smo definirali tri testa
-koristeći u sva tri gornji generatorski izraz.
-
-Nakon što je sustav izrađen pokretanjem naredbe `ctest` izvršavaju se svi testovi.
-U našem slučaju dobivamo sljedeći ispis:
-[source]
-```
-Test project /path/to/executable
-    Start 1: bash_test
-1/3 Test #1: bash_test ........................   Passed    0.01 sec
-    Start 2: cpp_test
-2/3 Test #2: cpp_test .........................   Passed    0.00 sec
-    Start 3: python_test
-3/3 Test #3: python_test ......................   Passed    0.05 sec
-
-100% tests passed, 0 tests failed out of 3
-
-Total Test time (real) =   0.06 sec
-```
+Za detalje o konstrukciji testova vidjeti https://github.com/google/googletest/blob/master/googletest/docs/primer.md.
