@@ -42,14 +42,14 @@ slučaju `ex1_project`. Ova je naredba obavezna kao i `cmake_minimum_required()`
 
 Treća naredba u  `CMakeLists.txt` datoteci je `add_executable()` koja kaže koji program treba izraditi.
 Oblik narebe `add_executable()` je sljedeći:
-[source, cmake]
+
 ```CMake
 add_executable(program izvornaDatoteka1 [izvornaDatoteka2 ...])
 ```
 Prvi argument koji se predaje naredbi `add_executable()` je ime programa koji treba izgraditi. Preostali
 argumenti su imena izvornih datoteka koje sudjeluju u izgradnji programa, odvojeni bjelinama.
 
-NOTE: Argumenti svih CMake naredbi  odvajaju se bjelinama, što uključuje i prijelaz u novi red.
+**Napomena**: Argumenti svih CMake naredbi  odvajaju se bjelinama, što uključuje i prijelaz u novi red.
       Naredbe se mogu pisati i velikim i malim slovima, ali se velika i mala slova razlikuju u argumentima naredbi.
 
 U našem slučaju program se zove `ex1prog` i u njegovoj izgradnji sudjeluje samo jedna izvorna datoteka:
@@ -81,7 +81,7 @@ Tu smo programu `cmake` predali (relativnu) stazu do direktorija s izvornim kodo
 ```
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/jurak/mytext/Teaching/CMake/Code/build-ex1
+-- Build files have been written to: .../CMake/build-ex1
 ```
 
 Sam `cmake` ne kompilira program već generira sustav za kompilaciju programa. Da bismo konačno kompilirali
@@ -91,7 +91,7 @@ naš program trebamo u  `build-ex1` otipkati
 cmake --build .
 ```
 
-U ovoj naredbi `.` predstavlja direktorij u kojem se nalazimo. Da smo naredbu  `cmake` pozvali iz direktorija `Code`
+U ovoj naredbi `.` predstavlja direktorij u kojem se nalazimo. Da smo naredbu  `cmake` pozvali iz direktorija `CMake`
 pisali bismo:
 
 ```
@@ -100,8 +100,8 @@ cmake --build build-ex1/
 Nakon toga u `build-ex1/` nalazimo naš program `ex1prog`.
 
 Time smo opisali način korištenja `CMake` sustava u najjednostavnijem slučaju kompilacije jednog programa koji ne treba
-povezivanje s vanjskim bibliotekama. Pored toga smo upoznali tri osnovne `CMake` naredbe. Do kraja ove sekcije ćemo
-reći nešto više o uvedenim pojmovima.
+povezivanje s vanjskim bibliotekama. Pored toga smo upoznali tri osnovne `CMake` naredbe o kojima ćemo
+sada reći nešto više.
 
 
 ###  Verzija CMake sustava
@@ -143,7 +143,7 @@ project(ex1_project Java)
 
 ### Generatori
 
-Da bismo kompilirali naš program trebali smo izvesti dvije naredbe u direktoriju `build-ex1`:
+Da bismo kompilirali naš program trebali smo izvršiti dvije naredbe u direktoriju `build-ex1`:
 
 ```
 cmake ../ex1
@@ -228,7 +228,7 @@ konfigurira sustav izgradnje za traženje grešaka. Program neće biti optimizir
 za traženje grešaka (eng. _debugger_). Kada želimo promijeniti tip izgradnje trebamo rekonfigurirati projekt naredbom
 
 ```
-cmake -DCMAKE_BUILD_TYPE=Release ./ex1
+cmake -DCMAKE_BUILD_TYPE=Release ../ex1
 ```
 ## Poddirektoriji
 
@@ -330,7 +330,7 @@ Ova naredba izgrađuje dinamičku biblioteku. Ako se `YES` zamjeni sa `NO` izgra
 statička biblioteka. Ako parametar  `STATIC`,  `SHARED` ili `MODULE`  zadamo u `add_library()`
 naredbi varijabla  `BUILD_SHARED_LIBS` će biti ignorirana.
 
-Iz ovog opisa je jasno da je najfleksibilniji način izgradnje biblioteke onaj u kojem  u `add_library()`
+Najfleksibilniji način izgradnje biblioteke je onaj u kojem  u `add_library()`
 ne navodimo tip biblioteke već ostavljamo programeru da bira za vrijeme konfiguracije kakvu će
 biblioteku izgraditi.
 
@@ -402,7 +402,8 @@ To su sljedeća svojstva:
 - `LINK_LIBRARIES` - Lista biblioteka s kojima se cilj mora povezati. To su apsolutne staze do biblioteka
 ili samo imena biblioteka bez prefikasa i sufikasa koje biblioteke dobivaju na ojedinim platformama.
 
-Ovdje se više nećemo baviti svojstvima ciljeva.
+Detalji se mogu vidjeti na primjer u knjizi *Profesional CMake*, https://crascit.com/professional-cmake/. 
+Mi se više nećemo baviti svojstvima ciljeva.
 
 
 ## Nalaženje stvari u datotečnom sustavu
@@ -476,7 +477,7 @@ imena `<packageName>Config.cmake` (ili rijeđe `<lowercasePackageName>-config.cm
 slučaju modul za nalaženje nije potreban i `find_package` će naći sve potrebne informacije u
 config-datoteci. Taj se način preferira jer je robusniji i omogućava puno jednostavije povezivanje
 s bibliotekom, ali veliki broj biblioteka nije razvijen korištenjem CMake sustava i stoga ih moramo
-tražiti pomoći modula za traženje. Kako traženje funkcionira najbolje je pokazati na primjerima.
+tražiti pomoći modula za traženje. Kako traženje funkcionira najbolje je pokazati na primjeru.
 
 ### Nalaženje Boost biblioteka
 
@@ -532,7 +533,7 @@ Naime, ovaj modul, osim što postavlja različite varijable, eksportira i ciljev
 `Boost::filesystem` koji smo iskoristili u `target_link_libraries()`. Takav cilj sa sobom donosi sve informacije
 potrebne za kompilaciju programa i njegovo povezivanje s bibliotekom. To se vidi kada program kompiliramo
 s opcijom `VERBOSE=1` (na Linuxu):
-[source]
+
 ```
 cmake --build  . -- VERBOSE=1
 ```
