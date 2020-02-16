@@ -648,3 +648,33 @@ Total Test time (real) =   0.00 sec
 ```
 
 Za detalje o konstrukciji testova vidjeti https://github.com/google/googletest/blob/master/googletest/docs/primer.md.
+
+
+## Kopiranje datoteka
+
+Često smo u situaciji da izvršni program treba pročitati neku datoteku 
+koju čuvamo u izvornom kodu. Tada nakon kompilacije programa datoteku treba kopirati
+iz direktorija izvornog koda u direktorij izvršnog koda.
+
+Tu nam pomaže naredba `configure_file()` koja kopira datoteke i vrši supstituciju
+varijabli u izvornoj datoteci.  Pojednostavljena signatura funkcije je sljedeća:
+
+```
+configure_file(source destination [COPYONLY])
+```
+
+Datoteka `source` je dana relativno u odnosu na `CMAKE_CURRENT_SOURCE_DIR`, to znači
+relativno u odnosu na direktorij u kojem se nalazi trenutna `CMakeLists.txt` datoteka.
+Datoteka `destination` je dana relativno u odnosu na `CMAKE_CURRENT_BINARY_DIR`, 
+dakle u odnosu na sliku izvornog direktorija u izvršnom direktoriju. 
+Naredba će kopirati `source` na  `destination`. `COPYONLY` koristimo kada ne vršimo nikakve 
+supstitucije varijabli (samo kopiranje). 
+
+Na primjer u direktoriju `ex6` imamo poddirektorij `src` sa `CMakeLists.txt` datotekom 
+
+```
+add_executable(ex6prog main.cpp)
+configure_file(text.txt text.txt COPYONLY)
+```
+
+Ako je izvršni kod u `ex6/build/`, onda se `ex6/src/text.txt` kopira u `ex6/build/src/text.txt`.
