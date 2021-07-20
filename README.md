@@ -680,3 +680,8 @@ configure_file(text.txt text.txt COPYONLY)
 ```
 
 Ako je izvršni kod u `ex6/build/`, onda se `ex6/src/text.txt` kopira u `ex6/build/src/text.txt`.
+
+
+## Kompilacija testova ako je `googletest` lokalno instaliran
+
+Primjer je napravljen u direktoriju `ex7`.
