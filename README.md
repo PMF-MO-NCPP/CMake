@@ -13,7 +13,7 @@ odrediti opcije koje treba predati prevodiocu i linkeru i generirati datoteke po
 
 
 
-Bazični CMake tutorijal se može naći na stranici https://cmake.org/cmake-tutorial/.
+Bazični CMake tutorijal može se naći na stranici https://cmake.org/cmake/help/latest/guide/tutorial/index.html.
 
 
 ## Prvi primjer
@@ -33,7 +33,8 @@ add_executable(ex1prog main.cpp)
 `CMake` je kontroliran pomoću datoteke `CMakeLists.txt` čije ime je zadano i ne može se mijenjati.
 Datoteka  `CMakeLists.txt` informira `CMake` koje programe i biblioteke treba izgraditi.
 
-U ovom primjeru imamo minimalnu  `CMakeLists.txt` datoteku. Prva linija u njoj je `cmake_minimum_required()`
+U ovom primjeru imamo minimalnu  `CMakeLists.txt` datoteku. Prva linija u njoj je **uvijek**
+`cmake_minimum_required()`
 naredba koja daje minimalnu verziju `CMake` programa koja će biti korištena. Ukoliko na sustavu nije
 instaliran `cmake` te verzije ili noviji pri pokretanju `cmake`-a bit će javljena greška.
 
@@ -69,7 +70,7 @@ Stoga je uobičajena praksa generirati kod izvan direktorija izvornog koda. Na p
 
 
 
-Da bismo izgradili program ulazimo u direktorij `build-ex1` i pozivamo `cmake` na sljedeći način:
+Da bismo izgradili program ulazimo u direktorij `build-ex1` i pozivamo `cmake` naredbu na sljedeći način:
 
 ```
 cmake ../ex1
@@ -119,8 +120,9 @@ sustavima od interesa. To u principu znači smanjiti verziju, no kod novih proje
 
 ### `project()` naredba
 
-Ova naredba dolazi odmah nakom  `cmake_minimum_required()` naredbe i daje ime projektu koje ima
-svoje značenje u dokumentiranju i pakiraju koda. Pored imena projekta ova naredba postavlja i programske
+Ova naredba dolazi odmah nakon  `cmake_minimum_required()` naredbe i daje ime projektu koje ima
+svoje značenje u dokumentiranju i pakiraju koda. 
+Pored imena projekta ova naredba postavlja i programske
 jezike koji se koriste u kodu. Na primjer, možemo pisati
 
 ```
@@ -259,7 +261,7 @@ Program će biti izgrađen u `src` direktoriju i stoga je `add_executable` nared
 add_executable(ex2prog main.cpp)
 ```
 
-S druge strane, `cmake` program će izgraditi direktorij s izvršnim kodom posve iste strukture koju
+S druge strane, `cmake` program će izgraditi direktorij s izvršnim kodom iste strukture koju
 ima izvorni kod. Recimo da se direktorij s izvršnim kodom zove `build-ex2` i da je na istoj
 razini kao i izvorni direktorij `ex2`.
 Tada direktorij  `build-ex2` ima poddirektorij `src` i program `ex2prog` se nalazi u njemu.
