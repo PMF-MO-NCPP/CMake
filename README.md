@@ -558,44 +558,47 @@ Napomenimo još da modul koji eksportira ciljeve čini to u "imeniku" koji ima i
 U ovom slučaju to je `Boost` te se ciljevi zovu `Boost::filesystem` i slično. To je konvencija koju
 slijede praktički svi moduli koji eksportiraju ciljeve.
 
+
+### Nalaženje fmt biblioteke
+
+FMT biblioteka je standardizirana u C++20 i nudi verziju `printf()` funkcije adaptiranu za moderni C++.
+Biblioteku možemo potražiti jednostavno naredbom 
+
+```
+find_package(fmt REQUIRED)
+```
+
+Biblioteka se može koristiti kao _header only_, odnosno dovoljno je uključiti zaglavlje `<fmt/core.h>`
+(i neka druga) za korištenje biblioteke. Nije potrebno nikakvo vezanje s vanjskom bibliotekom, statičkom ili dinamičkom.
+Naredba `target_link_libraries()`  ima zato ovaj oblik:
+
+
+```
+target_link_libraries(vector PRIVATE fmt::fmt-header-only)
+```
+
+
+
+
 ## Testovi
 
-Za testiranje koristimo `googletest` kao submodul u našem Git repozitoriju (vidjeti https://github.com/PMF-MO-OPCPP/Git).
-U svim našim primjerima koji koriste `googletest` biblioteka će se nalaziti  u direktoriju 'external/googletest'.
-Sami testovi će se nalaziti u direktoriju 'test'.
-Naša `CMakeLists.txt` datoteka u korijenskom direktoriju će omogućiti tetstiranje (`enable_testing()` naredba) i
-uključiti `googletest` biblioteku:
+Za testiranje koristimo biblioteku `googletest.` Za preuzimanje i kompilaciju googletesta koristimo novi 
+CMake modul **FetchContent** koji je prisutan u CMake-u od verzije 3.11. 
+U korijensku `CMakeLists.txt`  datoteku trebamo uključiti sljedeći sadržaj:
 
 ```
-cmake_minimum_required(VERSION 3.1)
-
-project(ex5_project CXX)
-enable_testing()
-
-# Compilation of googletest library #####
-set(GOOGLETEST_ROOT external/googletest/googletest CACHE STRING "Google Test source root")
-
-include_directories(
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/include
-    )
-
-set(GOOGLETEST_SOURCES
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest-all.cc
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest_main.cc
-    )
-
-foreach(_source ${GOOGLETEST_SOURCES})
-    set_source_files_properties(${_source} PROPERTIES GENERATED 1)
-endforeach()
-
-add_library(googletest ${GOOGLETEST_SOURCES})
-
-add_subdirectory("src")
-add_subdirectory("test")
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG     e2239ee6043f73722e7aa812a459f54a28552929  # release-1.11.0
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 ```
-Uočimo da ne uključujemo direktorij `external` u kojem je  `googletest` jer sam  `googletest` nije
-dio našeg projekta -- on je submodul (vidi https://github.com/PMF-MO-OPCPP/Git).
+`GIT_TAG` treba uvijek biti najnoviji.  Prilikom kompilacije googletest će biti preuzet u 
+`_dep` poddirektoriju direktorija izvršnog koda i tamo će biti i izrađen. 
 
 
 Program se nalazi u direktoriju `src` i sastoji se od datoteka `data.h`, `data.cpp` i `main.cpp`.
@@ -605,7 +608,7 @@ Datoteka `CMakeLists.txt` u `test` direktoriju ima sljedeći sadržaj:
 
 ```
 add_executable("testData" test.cpp ../src/data.cpp)
-target_link_libraries("testData"  googletest pthread)
+target_link_libraries("testData"  gtest_main)
 
 add_test(NAME testData COMMAND testData)
 ```
@@ -649,7 +652,6 @@ Total Test time (real) =   0.00 sec
 
 ```
 
-Za detalje o konstrukciji testova vidjeti https://github.com/google/googletest/blob/master/googletest/docs/primer.md.
 
 
 ## Kopiranje datoteka

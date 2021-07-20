@@ -25,8 +25,4 @@ TEST(Data, sort){
         ASSERT_EQ(x,f[i++]);
 }
 
-// Glavni program zove sve testove
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+
