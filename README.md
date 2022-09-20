@@ -582,7 +582,8 @@ target_link_libraries(vector PRIVATE fmt::fmt-header-only)
 
 ## Testovi
 
-Za testiranje koristimo biblioteku `googletest.` Za preuzimanje i kompilaciju googletesta koristimo novi 
+Za testiranje koristimo biblioteku `googletest.` Primjer s testovima se nalazi u direktoriju `ex5`.
+Za preuzimanje i kompilaciju googletesta koristimo novi 
 CMake modul **FetchContent** koji je prisutan u CMake-u od verzije 3.11. 
 U korijensku `CMakeLists.txt`  datoteku trebamo uključiti sljedeći sadržaj:
 
@@ -601,10 +602,10 @@ FetchContent_MakeAvailable(googletest)
 `_dep` poddirektoriju direktorija izvršnog koda i tamo će biti i izrađen. 
 
 
-Program se nalazi u direktoriju `src` i sastoji se od datoteka `data.h`, `data.cpp` i `main.cpp`.
-Testovi se nalaze u direktoriju `test` u datoteci `test.cpp`.
+Program se nalazi u direktoriju `ex5/src` i sastoji se od datoteka `data.h`, `data.cpp` i `main.cpp`.
+Testovi se nalaze u direktoriju `ex5/test` u datoteci `test.cpp`.
 
-Datoteka `CMakeLists.txt` u `test` direktoriju ima sljedeći sadržaj:
+Datoteka `CMakeLists.txt` u `ex5/test` direktoriju ima sljedeći sadržaj:
 
 ```
 add_executable("testData" test.cpp ../src/data.cpp)
