@@ -25,7 +25,7 @@ Ako želimo taj program kompilirati pomoću `CMake` sustava trebamo u direktorij
 
 
 ```CMake
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.13)
 project(ex1_project)
 add_executable(ex1prog main.cpp)
 ```
@@ -111,7 +111,7 @@ Prva naredba u  `CMakeLists.txt` datoteci mora biti  `cmake_minimum_required()` 
 `CMake` sustava s kojom ćemo raditi. Taj korak je vrlo važan jer je  `CMake` prilično evoluirao tijekom svog razvoja.
 Najveće promjene su se desile na kraju verzije 2 i pri prijelazu na verziju 3. Pri tom prijelazu od verzije 2 na verziju
 3 desila se i promjena načina korištenja `CMake` sustava, tako da su neke konstrukcije i tehnike danas zastarjele i ne treba ih koristiti.
-Najnovija verzija  `CMake` sustava je trenutno 3.12.
+Najnovija verzija  `CMake` sustava je trenutno 3.27.
 
 Svi novi projekti bi trebali koristiti najnoviju verziju ukoliko je prisutna na sustavu. Kada je važna prenosivost
 programa na druge operacijske sustave potrebno je uzeti onu verziju `CMake` sustava koja je prisutna na svim operacijskim
@@ -250,7 +250,7 @@ U direktoriju `ex2` ćemo korigirati naš prvi primjer iz `ex1` tako što ćemo 
 Datoteka `CMakeLists.txt` u korijenskom direktoriju imat će samo tri naredbe:
 
 ```
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.13)
 project(ex2_project)
 add_subdirectory(src)
 ```
@@ -506,7 +506,7 @@ i sljedeću `CMakeLists.txt` datoteku:
 
 
 ```
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.13)
 
 project(ex4_project)
 
@@ -592,7 +592,7 @@ include(FetchContent)
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG     e2239ee6043f73722e7aa812a459f54a28552929  # release-1.11.0
+  GIT_TAG  v1.14.0 
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -684,7 +684,3 @@ configure_file(text.txt text.txt COPYONLY)
 
 Ako je izvršni kod u `ex6/build/`, onda se `ex6/src/text.txt` kopira u `ex6/build/src/text.txt`.
 
-
-## Kompilacija testova ako je `googletest` lokalno instaliran
-
-Primjer je napravljen u direktoriju `ex7`.
