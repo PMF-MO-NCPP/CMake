@@ -2,15 +2,10 @@ cmake_minimum_required(VERSION 3.13)
 
 project(ex4_project)
 
-find_package(Boost 1.54 REQUIRED COMPONENTS filesystem)
+find_package(Boost REQUIRED COMPONENTS program_options)
 
 add_executable(ex4prog main.cpp)
-target_link_libraries(ex4prog  Boost::filesystem)
+target_link_libraries(ex4prog  Boost::program_options)
 
 
-set_target_properties(ex4prog
-  PROPERTIES
-    CXX_STANDARD 14
-    CXX_EXTENSIONS OFF
-    CXX_STANDARD_REQUIRED ON
-  )
+set_target_properties(ex4prog PROPERTIES CXX_STANDARD 20)
