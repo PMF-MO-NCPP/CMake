@@ -495,10 +495,10 @@ koje se zahtijevaju:
 find_package(packageName [version [EXACT]] [REQUIRED] [[COMPONENTS] component1 [component2...]])
 ```
 
-U našem slučaju mi ćemo iz `Boost` biblioteke tražiti komponetu `filesystem`:
+U našem slučaju mi ćemo iz `Boost` biblioteke tražiti komponetu `program_options`:
 
 ```
-find_package(Boost 1.54 REQUIRED COMPONENTS filesystem)
+find_package(Boost 1.54 REQUIRED COMPONENTS program_options)
 ```
 
 Pogledajmo jedan primjer. Imamo program  'CMake/ex4/main.cpp'
@@ -510,18 +510,12 @@ cmake_minimum_required(VERSION 3.13)
 
 project(ex4_project)
 
-find_package(Boost 1.54 REQUIRED COMPONENTS filesystem)
+find_package(Boost 1.54 REQUIRED COMPONENTS program_options)
 
 add_executable(ex4prog main.cpp)
-target_link_libraries(ex4prog  Boost::filesystem)
+target_link_libraries(ex4prog  Boost::program_options)
 
-
-set_target_properties(ex4prog
-  PROPERTIES
-    CXX_STANDARD 14
-    CXX_EXTENSIONS OFF
-    CXX_STANDARD_REQUIRED ON
-  )
+set_target_properties(ex4prog PROPERTIES CXX_STANDARD 20)
 ```
 
 Ova je  `CMakeLists.txt` datoteka izuzetno jednostavna što je posljedica načina na koji je konstruiran modul
@@ -548,14 +542,11 @@ Kompilacijska linija (na Linux sustavu) izgleda ovako (staza do izvornog koda je
 Poziv linkera izgleda ovako:
 
 ```
-/usr/bin/c++      CMakeFiles/path-info.dir/main.cpp.o  -o path-info /usr/lib/x86_64-linux-gnu/libboost_filesystem.so
-/usr/lib/x86_64-linux-gnu/libboost_system.so
+/usr/bin/c++      CMakeFiles/path-info.dir/main.cpp.o  -o path-info /usr/lib/x86_64-linux-gnu/libboost_program_options.so
 ```
-Ovdje vidimo da biblioteka `libboost_filesystem` ovisi o biblioteci `libboost_system` te da je ta zavisnost
-dodana automatski bez naše intervencije.
 
 Napomenimo još da modul koji eksportira ciljeve čini to u "imeniku" koji ima ime paketa.
-U ovom slučaju to je `Boost` te se ciljevi zovu `Boost::filesystem` i slično. To je konvencija koju
+U ovom slučaju to je `Boost` te se ciljevi zovu `Boost::program_options` i slično. To je konvencija koju
 slijede praktički svi moduli koji eksportiraju ciljeve.
 
 
